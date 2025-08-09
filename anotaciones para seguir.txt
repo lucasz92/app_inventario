@@ -1,0 +1,18 @@
+Sugerencias de mejora
+- Usá QTabWidget si querés pestañas visuales Si tu idea es tener distintas "secciones" tipo productos, búsqueda avanzada, alertas… podrías incorporar un QTabWidget que cargue cada widget separado:
+from PyQt6.QtWidgets import QTabWidget
+
+self.tabs = QTabWidget()
+self.tabs.addTab(QWidget(), "Productos")
+self.tabs.addTab(QWidget(), "Búsqueda avanzada")
+layout.addWidget(self.tabs)
+- Modularizá los widgets Los métodos como pestaña_de_productos() podrían devolver un QWidget completo que luego agregás como pestaña. Ejemplo:
+def pestaña_de_productos(self):
+    widget = QWidget()
+    layout = QVBoxLayout(widget)
+    layout.addWidget(QPushButton("Ejemplo"))
+    return widget
+- Eliminá imports innecesarios (por ahora) Como no estás usando pandas en esta etapa, podés limpiar esos imports para mantener foco.
+- Prepará espacio para estilos visuales Más adelante podrías agregar estilos tipo:
+self.setStyleSheet("background-color: #f0f0f0; font-size: 14px;")
+- Centralizá inicializaciones Podés meter la creación de pestañas dentro de un método como self.initTabs() para mantener el __init__() más limpio.
