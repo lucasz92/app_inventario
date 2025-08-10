@@ -32,17 +32,20 @@ class TabConfiguracion(QWidget):
         layout.addWidget(self.boton_importar)
         layout.addWidget(self.boton_exportar)
         return layout
+    
     def importar_excel(self):
         ruta, _ = QFileDialog.getOpenFileName(self, "Importar Excel", "", "Archivos Excel (*.xlsx)")
         if ruta:
             try:
                 importar_desde_excel(ruta)
                 QMessageBox.information(self, "Importación", "Datos importados correctamente.")
+                # Recargar los datos desde la BD para mostrar en la tabla
+                datos = obtener_productos_con_ubicacion()
+                actualizar_tabla(self.tabla_productos, datos)
             except Exception as e:
                 QMessageBox.critical(self, "Error", f"No se pudo importar el archivo:\n{e}")
-            finally:
-                if self.tabla_productos:
-                    actualizar_tabla(self.tabla_productos)
+
+
     def exportar_excel(self):
         ruta, _ = QFileDialog.getSaveFileName(self, "Exportar Excel", "", "Archivos Excel (*.xlsx)")
         if ruta:

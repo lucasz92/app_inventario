@@ -1,175 +1,105 @@
-/* === Estilo GitHub Minimal & Professional === */
-
-/* Ventana principal */
-QMainWindow {
-    background-color: #f6f8fa;
-    color: #24292f;
-    font-family: "Segoe UI", Helvetica, Arial, sans-serif;
-}
-
-/* Fondo central con degradado suave */
-QMainWindow > QWidget {
-    background: qlineargradient(
-        x1: 0, y1: 0, x2: 0, y2: 1,
-        stop: 0 #f6f8fa, stop: 0.5 #eaeef2, stop: 1 #d8dee4
-    );
-}
-
-/* Widgets generales */
+/* ======== Estilo General ======== */
 QWidget {
-    background-color: transparent;
-    color: #24292f;
+    background-color: #f8f9fa;
+    font-family: "Segoe UI";
+    font-size: 12pt;
+    color: #333;
 }
 
-/* Labels */
-QLabel {
-    color: #24292f;
-    font-weight: 500;
-    padding: 4px;
+/* ======== Título ======== */
+#titulo {
+    font-size: 18pt;
+    font-weight: bold;
+    color: #2c3e50;
+    padding: 10px;
+    border-bottom: 2px solid #dcdcdc;
 }
 
-/* === Tabs estilo GitHub === */
-QTabWidget::pane {
-    border: 1px solid #d0d7de;
-    background: #ffffff;
+/* ======== Label de detalles ======== */
+#detalles_label {
+    font-size: 14pt;
+    font-weight: bold;
+    color: #34495e;
+    padding: 5px;
+}
+
+/* ======== Buscador ======== */
+#buscador {
+    padding: 5px;
+    border: 1px solid #bbb;
     border-radius: 6px;
-    margin-top: 2px;
+    background-color: white;
+}
+#buscador:focus {
+    border: 1px solid #3498db;
+    background-color: #eef6fb;
 }
 
-QTabBar::tab {
-    background: #f6f8fa;
-    border: 1px solid #d0d7de;
-    border-bottom: none;
-    padding: 8px 16px;
-    margin-right: 2px;
-    border-top-left-radius: 6px;
-    border-top-right-radius: 6px;
-    color: #57606a;
-    font-weight: 500;
-    min-width: 80px;
+/* ======== Tabla de productos ======== */
+#tabla {
+    gridline-color: #ccc;
+    selection-background-color: #3498db;
+    selection-color: white;
+    alternate-background-color: #f2f2f2;
 }
-
-QTabBar::tab:selected {
-    background: #ffffff;
-    color: #24292f;
-    border-bottom: 2px solid #0969da;
-    font-weight: 600;
-}
-
-QTabBar::tab:hover:!selected {
-    background: #f0f3f6;
-    color: #24292f;
-}
-
-/* === Botones === */
-QPushButton {
-    background: #f6f8fa;
-    border: 1px solid #d0d7de;
-    border-radius: 6px;
-    padding: 6px 14px;
-    color: #24292f;
-    font-weight: 500;
-}
-
-QPushButton:hover {
-    background: #f0f3f6;
-    border-color: #bcc4cc;
-}
-
-QPushButton:pressed {
-    background: #e1e4e8;
-    border-color: #8c959f;
-}
-
-/* Botón de peligro */
-QPushButton#btnEliminar {
-    background: #fff5f5;
-    border: 1px solid #ff9b9b;
-    color: #cf222e;
-}
-
-QPushButton#btnEliminar:hover {
-    background: #ffe0e0;
-    border-color: #cf222e;
-}
-
-/* === Tablas === */
-QTableWidget {
-    background-color: #ffffff;
-    border: 1px solid #d0d7de;
-    border-radius: 6px;
-    gridline-color: #e1e4e8;
-    selection-background-color: #dbeafe;
-    alternate-background-color: #f6f8fa;
-}
-
-QTableWidget::item {
-    padding: 6px;
-}
-
-QTableWidget::item:selected {
-    background-color: #dbeafe;
-    color: #0969da;
-}
-
 QHeaderView::section {
-    background: #f6f8fa;
-    border: 1px solid #d0d7de;
-    padding: 6px 10px;
-    color: #57606a;
-    font-weight: 600;
-    font-size: 11px;
-    text-transform: uppercase;
+    background-color: #3498db;
+    color: white;
+    font-weight: bold;
+    padding: 4px;
+    border: none;
 }
-
-/* === Campos de texto === */
-QLineEdit {
-    background-color: #ffffff;
-    border: 1px solid #d0d7de;
+QTableWidget {
+    background-color: white;
+    border: 1px solid #ccc;
     border-radius: 6px;
-    padding: 6px 10px;
-    color: #24292f;
-    font-size: 14px;
 }
 
-QLineEdit:focus {
-    border-color: #0969da;
+/* ======== Botones ======== */
+QPushButton {
+    background-color: #2980b9;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 11pt;
+}
+QPushButton:hover {
+    background-color: #3498db;
+}
+QPushButton:pressed {
+    background-color: #21618c;
 }
 
-/* === Scrollbars === */
-QScrollBar:vertical {
-    background: #f6f8fa;
-    width: 10px;
+/* Botón Agregar */
+#btnAgregar {
+    background-color: #27ae60;
+}
+#btnAgregar:hover {
+    background-color: #2ecc71;
+}
+#btnAgregar:pressed {
+    background-color: #1e8449;
 }
 
-QScrollBar::handle:vertical {
-    background: #d0d7de;
-    border-radius: 5px;
+/* Botón Modificar */
+#btnModificar {
+    background-color: #f39c12;
+}
+#btnModificar:hover {
+    background-color: #f1c40f;
+}
+#btnModificar:pressed {
+    background-color: #d68910;
 }
 
-QScrollBar::handle:vertical:hover {
-    background: #bcc4cc;
+/* Botón Eliminar */
+#btnEliminar {
+    background-color: #c0392b;
 }
-
-QScrollBar:horizontal {
-    background: #f6f8fa;
-    height: 10px;
+#btnEliminar:hover {
+    background-color: #e74c3c;
 }
-
-QScrollBar::handle:horizontal {
-    background: #d0d7de;
-    border-radius: 5px;
-}
-
-QScrollBar::handle:horizontal:hover {
-    background: #bcc4cc;
-}
-
-/* === Tooltips === */
-QToolTip {
-    background-color: #24292f;
-    color: #ffffff;
-    border-radius: 4px;
-    padding: 4px 6px;
-    font-size: 12px;
+#btnEliminar:pressed {
+    background-color: #922b21;
 }
