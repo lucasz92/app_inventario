@@ -10,39 +10,48 @@ def conectar_db():
     return conexion
 
 def crear_tablas():
-    os.makedirs("data", exist_ok=True)
     conexion = conectar_db()
     cursor = conexion.cursor()
-
-    # Tabla de productos
+    # Tabla productos
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS productos (
-        codigo TEXT PRIMARY KEY,
-        descripcion TEXT NOT NULL,
-        categoria TEXT,
-        proveedor TEXT,
-        puesto_trabajo TEXT,
-        stock_actual INTEGER DEFAULT 0,
-        unidad_medida TEXT,
-        tipo_control TEXT,
+        codigo TEXT PRIMARY KEY,              
+        descripcion TEXT,            
+        categoria TEXT,                        
+        proveedor TEXT,                        
+        puesto_trabajo TEXT,                   
+        stock_actual INTEGER DEFAULT 0,        
+        unidad_medida TEXT,                    
+        tipo_control TEXT,                     
         stock_minimo INTEGER DEFAULT 0,
         stock_maximo INTEGER DEFAULT 0,
         observacion TEXT
     );
     """)
 
-    # Tabla de ubicaciones
+    # Tabla ubicaciones
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS ubicaciones (
         id_ubicacion INTEGER PRIMARY KEY AUTOINCREMENT,
-        codigo_producto TEXT NOT NULL,
-        fila TEXT,
+        fila INTEGER,
         columna TEXT,
-        estante TEXT,
+        estante INTEGER,
+        posicion INTEGER,
+        orientacion TEXT,
         deposito TEXT,
-        sector TEXT,
-        contenedor TEXT,
-        FOREIGN KEY (codigo_producto) REFERENCES productos (codigo)
+        sector TEXT
+    );
+    """)
+
+    # Relación producto-ubicación
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS producto_ubicacion (
+        id_prod_ub INTEGER PRIMARY KEY AUTOINCREMENT,
+        codigo_producto TEXT NOT NULL,
+        id_ubicacion INTEGER NOT NULL,
+        cantidad INTEGER DEFAULT 0,
+        FOREIGN KEY (codigo_producto) REFERENCES productos (codigo),
+        FOREIGN KEY (id_ubicacion) REFERENCES ubicaciones (id_ubicacion)
     );
     """)
 
@@ -51,8 +60,8 @@ def crear_tablas():
     CREATE TABLE IF NOT EXISTS alertas (
         id_alerta INTEGER PRIMARY KEY AUTOINCREMENT,
         codigo_producto TEXT NOT NULL,
-        id_ubicacion INTEGER,
-        tipo_alerta TEXT,
+        id_ubicacion INTEGER NOT NULL,
+        tipo_alerta TEXT NOT NULL,
         razon TEXT,
         detalles TEXT,
         estado TEXT DEFAULT 'sin iniciar',
@@ -61,6 +70,25 @@ def crear_tablas():
         FOREIGN KEY (codigo_producto) REFERENCES productos (codigo),
         FOREIGN KEY (id_ubicacion) REFERENCES ubicaciones (id_ubicacion)
     );
+    """)
+
+    # Vista para consultas de alertas
+    cursor.execute("""
+    CREATE VIEW IF NOT EXISTS vista_alertas_detalle AS
+    SELECT 
+        a.id_alerta,
+        p.codigo AS codigo_producto,
+        p.descripcion,
+        u.fila, u.columna, u.estante, u.posicion, u.orientacion,
+        a.tipo_alerta,
+        a.razon,
+        a.detalles,
+        a.estado,
+        a.fecha_inicio,
+        a.fecha_fin
+    FROM alertas a
+    JOIN productos p ON a.codigo_producto = p.codigo
+    JOIN ubicaciones u ON a.id_ubicacion = u.id_ubicacion;
     """)
 
     conexion.commit()
@@ -78,43 +106,48 @@ def inicializar_db():
 def buscar_productos(texto: str) -> list[tuple]:
     conn = conectar_db()
     cursor = conn.cursor()
+    like_text = f"%{texto}%"
     query = """
-        SELECT p.codigo, p.descripcion, u.fila, u.columna, u.estante, u.contenedor,
-               u.deposito, u.sector
+        SELECT p.codigo, p.descripcion, u.fila, u.columna, u.estante, 
+               u.posicion, u.orientacion
         FROM productos p
-        LEFT JOIN ubicaciones u ON p.codigo = u.codigo_producto
+        LEFT JOIN producto_ubicacion pu ON p.codigo = pu.codigo_producto
+        LEFT JOIN ubicaciones u ON pu.id_ubicacion = u.id_ubicacion
         WHERE p.codigo LIKE ?
            OR p.descripcion LIKE ?
-           OR u.deposito LIKE ?
-           OR u.sector LIKE ?
+           OR u.columna LIKE ?
+           OR u.orientacion LIKE ?
            OR p.puesto_trabajo LIKE ?
         ORDER BY p.codigo;
     """
-    like_text = f"%{texto}%"
     cursor.execute(query, (like_text,) * 5)
     resultados = cursor.fetchall()
     conn.close()
     return resultados
 
+
 def obtener_productos_con_ubicacion():
     conexion = conectar_db()
     cursor = conexion.cursor()
     cursor.execute("""
-        SELECT p.codigo, p.descripcion, u.fila, u.columna, u.estante, u.contenedor,
-               u.deposito, u.sector
+        SELECT p.codigo, p.descripcion, u.fila, u.columna, u.estante, 
+               u.posicion, u.orientacion, u.deposito, u.sector
         FROM productos p
-        LEFT JOIN ubicaciones u ON p.codigo = u.codigo_producto
+        LEFT JOIN producto_ubicacion pu ON p.codigo = pu.codigo_producto
+        LEFT JOIN ubicaciones u ON pu.id_ubicacion = u.id_ubicacion
         ORDER BY p.codigo;
     """)
     resultado = cursor.fetchall()
     conexion.close()
     return resultado
 
+
 def obtener_detalles_producto(codigo):
     conexion = conectar_db()
     cursor = conexion.cursor()
     cursor.execute("""
-        SELECT proveedor, tipo_control, stock_minimo, stock_maximo,
+        SELECT proveedor, tipo_control, 
+               CAST(stock_minimo AS TEXT) || '/' || CAST(stock_maximo AS TEXT) as max_min,
                categoria, puesto_trabajo, observacion
         FROM productos
         WHERE codigo = ?;

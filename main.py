@@ -4,16 +4,19 @@ from PyQt6.QtWidgets import QLabel, QApplication, QMainWindow, QPushButton, QVBo
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QIcon, QFont
 from tabs.tab_productos import TabProductos
+from tabs.tab_busqueda_avanzada import TabBusquedaAvanzada
+from tabs.tab_alertas import TabAlertas
 from tabs.tab_configuracion import TabConfiguracion
 from data.database import inicializar_db
+from config import WINDOW_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT, STYLES_PATH
 
 class VentanaPrincipal(QMainWindow):
     def __init__(self):
         super().__init__()
         inicializar_db()
         self.aplicar_estilos()
-        self.setWindowTitle("Gestor de Productos")
-        self.setGeometry(100, 100, 1200, 750)
+        self.setWindowTitle(WINDOW_TITLE)
+        self.setGeometry(100, 100, 1250, 400)
 
         layout = QVBoxLayout()
         layout.setContentsMargins(10, 10, 10, 10)
@@ -24,16 +27,24 @@ class VentanaPrincipal(QMainWindow):
         titulo.setStyleSheet("color: #333; padding: 5px;")
         layout.addWidget(titulo)
 
-        # Configurar el layoutu
-
+        # Configurar las pestañas
         self.tabs = QTabWidget()
+
+        # Instanciar las pestañas
         self.tab_productos = TabProductos()
         self.tab_configuracion = TabConfiguracion(self.tab_productos.tabla)
+        self.tab_busqueda_avanzada = TabBusquedaAvanzada()
+        self.tab_alertas = TabAlertas()
+
+        # Añadir las pestañas al QTabWidget en el orden solicitado
         self.tabs.addTab(self.tab_productos, "Productos")
-        self.tabs.addTab(self.crear_pestaña("busqueda_avanzada"), "Búsqueda avanzada")
-        self.tabs.addTab(self.crear_pestaña("alertas"), "Alertas")
+        self.tabs.addTab(self.tab_busqueda_avanzada, "Búsqueda Avanzada")
+        self.tabs.addTab(self.tab_alertas, "Alertas")
         self.tabs.addTab(self.tab_configuracion, "Configuración")
+
+        # Agregar las pestañas al layout principal
         layout.addWidget(self.tabs)
+
         # Crear un widget central y establecer el layout
         widget_central = QWidget()
         widget_central.setLayout(layout)
@@ -42,37 +53,25 @@ class VentanaPrincipal(QMainWindow):
 
     def aplicar_estilos(self):
         try:
-                with open("ui/styles.qss", "r") as archivo_estilos:
+                with open(STYLES_PATH, "r", encoding="utf-8") as archivo_estilos:
                         estilo = archivo_estilos.read()
                         self.setStyleSheet(estilo)
         except FileNotFoundError:
-                print("Archivo de estilos no encontrado.")
+                print(f"Archivo de estilos no encontrado: {STYLES_PATH}")
 
         
-    def crear_pestaña(self, tipo: str) -> QWidget:
-        widget = QWidget()
-        layout = QVBoxLayout(widget)
 
-        contenido = {
-                "busqueda_avanzada": QPushButton("Búsqueda avanzada"),
-                "alertas": QPushButton("Alertas"),
-                "configuracion": QPushButton("Configuración")
-        }
-
-        if tipo == "productos":
-                return TabProductos()
-        elif tipo in contenido:
-                layout.addWidget(contenido[tipo])
-                return widget
-        else:
-                layout.addWidget(QLabel("Pestaña no definida"))
-                return widget
 
     
 
 
-if __name__ == "__main__":
+def crear_aplicacion():
+    """Función para crear la aplicación y ventana principal"""
     app = QApplication(sys.argv)
     ventana = VentanaPrincipal()
+    return app, ventana
+
+if __name__ == "__main__":
+    app, ventana = crear_aplicacion()
     ventana.show()
     sys.exit(app.exec())
