@@ -1,0 +1,59 @@
+# 🧪 Entornos virtuales
+venv/
+.venv/
+.env/
+
+# ⚙️ Compilados y temporales
+__pycache__/
+*.py[cod]
+*.pyo
+*.so
+
+# 🪵 Logs y debugging
+*.log
+*.out
+*.err
+
+# 🧠 Configuración local (IDE/editor)
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+*.swp
+
+# 📦 Empaquetado y distribución
+dist/
+build/
+*.spec
+*.egg-info/
+*.manifest
+*.dll
+*.exe
+
+# 🖥️ Archivos de sistema
+.DS_Store
+Thumbs.db
+
+# 📚 Dependencias externas y bases de datos
+node_modules/
+*.db
+*.sqlite3
+
+# 🧪 Archivos de pruebas
+.coverage
+htmlcov/
+.tox/
+nosetests.xml
+pytest_cache/
+
+# 🎨 Assets temporales (opcional, según tu flujo)
+*.tmp
+*.bak
+*.psd
+*.xcf
+*.wav
+*.mp3
+*.mp4
+
+.mypy_cache/
+.cache/

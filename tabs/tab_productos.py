@@ -91,7 +91,13 @@ class TabProductos(QWidget):
         actualizar_tabla(self.tabla, datos_iniciales)
         
     def buscador(self):
-        layout = QHBoxLayout()
+        # Crear contenedor principal para la búsqueda
+        contenedor_buscador = QWidget()
+        contenedor_buscador.setObjectName("buscador_container")
+        
+        layout = QHBoxLayout(contenedor_buscador)
+        layout.setContentsMargins(0, 0, 0, 0)
+        
         buscador_label = QLabel("<b>Buscar producto:</b>")
         buscador_label.setFont(QFont("Segoe UI", 12))
 
@@ -105,7 +111,12 @@ class TabProductos(QWidget):
         layout.addWidget(buscador_label)
         layout.addWidget(self.buscador_textbox)
         layout.addStretch(1)
-        return layout
+        
+        # Crear layout principal que contenga el widget
+        layout_principal = QVBoxLayout()
+        layout_principal.addWidget(contenedor_buscador)
+        
+        return layout_principal
     
 
     def filtrar_tabla(self, texto):
