@@ -16,19 +16,47 @@ class VentanaPrincipal(QMainWindow):
         inicializar_db()
         self.aplicar_estilos()
         self.setWindowTitle(WINDOW_TITLE)
-        self.setGeometry(100, 100, 1250, 400)
+        self.setGeometry(100, 100, 1400, 800)
+        self.setMinimumSize(1200, 700)
 
-        layout = QVBoxLayout()
-        layout.setContentsMargins(10, 10, 10, 10)
+        # Layout principal sin márgenes para diseño limpio
+        layout_principal = QVBoxLayout()
+        layout_principal.setContentsMargins(0, 0, 0, 0)
+        layout_principal.setSpacing(0)
 
+        # Header con título principal
+        header_widget = QWidget()
+        header_widget.setObjectName("header_widget")
+        header_widget.setStyleSheet("""
+            QWidget#header_widget {
+                background: #FFFFFF;
+                border-bottom: 1px solid #E1E7EC;
+                min-height: 80px;
+                max-height: 80px;
+            }
+        """)
+        
+        header_layout = QHBoxLayout(header_widget)
+        header_layout.setContentsMargins(32, 0, 32, 0)
+        
         titulo = QLabel("Gestor de Productos")
-        titulo.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        titulo.setFont(QFont("Sego UI", 16, weight=QFont.Weight.Bold))
-        titulo.setStyleSheet("color: #333; padding: 5px;")
-        layout.addWidget(titulo)
+        titulo.setObjectName("titulo")
+        titulo.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
+        header_layout.addWidget(titulo)
+        header_layout.addStretch()
+        
+        layout_principal.addWidget(header_widget)
 
-        # Configurar las pestañas
+        # Área de contenido principal
+        contenido_widget = QWidget()
+        contenido_widget.setStyleSheet("background: #F5F5F5;")
+        contenido_layout = QVBoxLayout(contenido_widget)
+        contenido_layout.setContentsMargins(0, 0, 0, 0)
+        contenido_layout.setSpacing(0)
+
+        # Configurar las pestañas con estilo mejorado
         self.tabs = QTabWidget()
+      
 
         # Instanciar las pestañas
         self.tab_productos = TabProductos()
@@ -36,18 +64,21 @@ class VentanaPrincipal(QMainWindow):
         self.tab_busqueda_avanzada = TabBusquedaAvanzada()
         self.tab_alertas = TabAlertas()
 
-        # Añadir las pestañas al QTabWidget en el orden solicitado
-        self.tabs.addTab(self.tab_productos, "Productos")
-        self.tabs.addTab(self.tab_busqueda_avanzada, "Búsqueda Avanzada")
-        self.tabs.addTab(self.tab_alertas, "Alertas")
-        self.tabs.addTab(self.tab_configuracion, "Configuración")
+        # Añadir las pestañas al QTabWidget con iconos
+        self.tabs.addTab(self.tab_productos, "📦 Productos")
+        self.tabs.addTab(self.tab_busqueda_avanzada, "🔍 Búsqueda Avanzada")
+        self.tabs.addTab(self.tab_alertas, "⚠️ Alertas")
+        self.tabs.addTab(self.tab_configuracion, "⚙️ Configuración")
+        
+        # Establecer la primera pestaña como activa
+        self.tabs.setCurrentIndex(0)
 
-        # Agregar las pestañas al layout principal
-        layout.addWidget(self.tabs)
+        contenido_layout.addWidget(self.tabs)
+        layout_principal.addWidget(contenido_widget)
 
-        # Crear un widget central y establecer el layout
+        # Crear widget central
         widget_central = QWidget()
-        widget_central.setLayout(layout)
+        widget_central.setLayout(layout_principal)
         self.setCentralWidget(widget_central)
 
 
