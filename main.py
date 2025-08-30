@@ -1,30 +1,29 @@
 import sys
-import os
-from PyQt6.QtWidgets import QLabel, QApplication, QMainWindow, QPushButton, QVBoxLayout, QWidget, QTableWidget, QTabWidget, QHBoxLayout
+from pathlib import Path
+from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel, QVBoxLayout, QWidget, QHBoxLayout, QTabWidget
 from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QIcon, QFont
 from tabs.tab_productos import TabProductos
 from tabs.tab_busqueda_avanzada import TabBusquedaAvanzada
 from tabs.tab_alertas import TabAlertas
 from tabs.tab_configuracion import TabConfiguracion
 from data.database import inicializar_db
-from config import WINDOW_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT, STYLES_PATH
+from config import WINDOW_TITLE, STYLES_PATH
+
 
 class VentanaPrincipal(QMainWindow):
     def __init__(self):
         super().__init__()
         inicializar_db()
-        self.aplicar_estilos()
         self.setWindowTitle(WINDOW_TITLE)
         self.setGeometry(100, 100, 1400, 800)
         self.setMinimumSize(1200, 700)
 
-        # Layout principal sin márgenes para diseño limpio
+        # Layout principal sin márgenes
         layout_principal = QVBoxLayout()
         layout_principal.setContentsMargins(0, 0, 0, 0)
         layout_principal.setSpacing(0)
 
-        # Header con título principal
+        # Header
         header_widget = QWidget()
         header_widget.setObjectName("header_widget")
         header_widget.setStyleSheet("""
@@ -35,74 +34,77 @@ class VentanaPrincipal(QMainWindow):
                 max-height: 80px;
             }
         """)
-        
         header_layout = QHBoxLayout(header_widget)
         header_layout.setContentsMargins(32, 0, 32, 0)
-        
+
         titulo = QLabel("Gestor de Productos")
         titulo.setObjectName("titulo")
         titulo.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
         header_layout.addWidget(titulo)
         header_layout.addStretch()
-        
+
         layout_principal.addWidget(header_widget)
 
-        # Área de contenido principal
+        # Contenido principal
         contenido_widget = QWidget()
         contenido_widget.setStyleSheet("background: #F5F5F5;")
         contenido_layout = QVBoxLayout(contenido_widget)
         contenido_layout.setContentsMargins(0, 0, 0, 0)
         contenido_layout.setSpacing(0)
 
-        # Configurar las pestañas con estilo mejorado
+        # Tabs
         self.tabs = QTabWidget()
-      
+        self.tabs.setObjectName("tabs")
 
-        # Instanciar las pestañas
         self.tab_productos = TabProductos()
         self.tab_configuracion = TabConfiguracion(self.tab_productos.tabla)
         self.tab_busqueda_avanzada = TabBusquedaAvanzada()
         self.tab_alertas = TabAlertas()
 
-        # Añadir las pestañas al QTabWidget con iconos
         self.tabs.addTab(self.tab_productos, "📦 Productos")
         self.tabs.addTab(self.tab_busqueda_avanzada, "🔍 Búsqueda Avanzada")
         self.tabs.addTab(self.tab_alertas, "⚠️ Alertas")
         self.tabs.addTab(self.tab_configuracion, "⚙️ Configuración")
-        
-        # Establecer la primera pestaña como activa
+
         self.tabs.setCurrentIndex(0)
 
         contenido_layout.addWidget(self.tabs)
         layout_principal.addWidget(contenido_widget)
 
-        # Crear widget central
+        # Central widget
         widget_central = QWidget()
         widget_central.setLayout(layout_principal)
         self.setCentralWidget(widget_central)
 
 
-    def aplicar_estilos(self):
-        try:
-                with open(STYLES_PATH, "r", encoding="utf-8") as archivo_estilos:
-                        estilo = archivo_estilos.read()
-                        self.setStyleSheet(estilo)
-        except FileNotFoundError:
-                print(f"Archivo de estilos no encontrado: {STYLES_PATH}")
-
-        
-
-
-    
-
-
 def crear_aplicacion():
-    """Función para crear la aplicación y ventana principal"""
     app = QApplication(sys.argv)
+
+    # Cargar QSS desde STYLES_PATH
+    qss_path = Path(STYLES_PATH)
+    if qss_path.exists():
+        with open(qss_path, "r", encoding="utf-8") as f:
+            app.setStyleSheet(f.read())
+    else:
+        print(f"Archivo de estilos no encontrado: {qss_path}")
+
     ventana = VentanaPrincipal()
-    return app, ventana
+    ventana.show()
+    return app
+
 
 if __name__ == "__main__":
-    app, ventana = crear_aplicacion()
+    app = QApplication(sys.argv)
+
+    # Cargar estilos
+    from pathlib import Path
+    from config import STYLES_PATH
+    qss_path = Path(STYLES_PATH)
+    if qss_path.exists():
+        with open(qss_path, "r", encoding="utf-8") as f:
+            app.setStyleSheet(f.read())
+
+    ventana = VentanaPrincipal()
     ventana.show()
+
     sys.exit(app.exec())
